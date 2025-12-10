@@ -7,7 +7,7 @@
 </head>
 <body>
 <table border="1" align="center">
-    <caption align="center">Welcome User page</caption>
+    <caption align="center">User by id</caption>
     <tr>
         <th>Id</th>
         <th>Name</th>
@@ -23,9 +23,16 @@
         <td th:utext="${showUser.getAge()}">Age</td>
         <td th:utext="${showUser.getEmail()}">Email</td>
         <td th:utext="${showUser.getPhoneNumber()}">Phone Number</td>
+        <td>
+            <form th:method="GET" th:action="@{/admin/edit/{id}(id=${showUser.getId()})}">
+                <input type="submit" value="edit"/>
+            </form>
+            <form th:method="DELETE" th:action="@{/admin/{id}(id=${showUser.getId()})}">
+                <input type="submit" value="delete">
+            </form>
+        </td>
     </tr>
 </table>
-<a href="/logout"><input type="submit" value="logout"></a>
 
 </body>
 </html>
