@@ -26,7 +26,7 @@ public class RegistrationController {
         return "registration";
     }
 
-    @PostMapping( )
+    @PostMapping()
     public String saveUser(@ModelAttribute("user") User user) {
         userService.save(user);
         return "redirect:/login";

@@ -28,15 +28,12 @@ public class SuccessUserHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException {
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
 
-        String username = authentication.getName();
-        User user = userRepository.findByUsername(username);
-        Long Id = user.getId();
         if (roles.contains("ROLE_ADMIN")) {
             httpServletResponse.sendRedirect("/admin");
         } else if (roles.contains("ROLE_USER")) {
-            httpServletResponse.sendRedirect(String.format("/user/%s", Id));
+            httpServletResponse.sendRedirect(String.format("/user"));
         } else {
-            httpServletResponse.sendRedirect("/");
+            httpServletResponse.sendRedirect("/login");
         }
     }
 }

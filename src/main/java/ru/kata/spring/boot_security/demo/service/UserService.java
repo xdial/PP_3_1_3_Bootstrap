@@ -36,13 +36,31 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    //    @Override
+//    @Transactional
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//
+//        User user = userRepository.findByUsername(username);
+//        if (user == null) {
+//            throw new UsernameNotFoundException(String.format("User with name: '%s' not found", username));
+//        }
+//        Set<? extends GrantedAuthority> authorities = user.getRoles().stream()
+//                .map((role) -> new SimpleGrantedAuthority(role.getName()))
+//                .collect(Collectors.toSet());
+//
+//        return new org.springframework.security.core.userdetails.User(
+//                user.getUsername(),
+//                user.getPassword(),
+//                authorities
+//        );
+//    }
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        User user = userRepository.findByUsername(username);
+        User user = userRepository.findByEmail(email);
         if (user == null) {
-            throw new UsernameNotFoundException(String.format("User with name: '%s' not found", username));
+            throw new UsernameNotFoundException(String.format("User with email: '%s' not found", email));
         }
         Set<? extends GrantedAuthority> authorities = user.getRoles().stream()
                 .map((role) -> new SimpleGrantedAuthority(role.getName()))
@@ -67,9 +85,34 @@ public class UserService implements UserDetailsService {
         return userRepository.findAll();
     }
 
+    public List<Role> findAllRoles() {
+        return roleRepository.findAll();
+    }
+
+    // REGISTRATION FROM ADMIN PANEL
+    @Transactional
+    public boolean save(User user, List<Long> roleIds) {
+        User userFromDB = userRepository.findByUsername(user.getUsername());
+        if (userFromDB != null) {
+            return false;
+        }
+        Set<Role> roles = roleIds.stream()
+                .map(id -> roleRepository.findById(id).orElse(null)).collect(Collectors.toSet());
+        user.setUsername(user.getUsername());
+        user.setLastname(user.getLastname());
+        user.setEmail(user.getEmail());
+        user.setAge(user.getAge());
+        user.setPhoneNumber(user.getPhoneNumber());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRoles(roles);
+        userRepository.save(user);
+        return true;
+    }
+
+    //REGISTRATION
     @Transactional
     public boolean save(User user) {
-        User userFromDB = userRepository.findByUsername(user.getUsername());
+        User userFromDB = userRepository.findByEmail(user.getEmail());
         if (userFromDB != null) {
             return false;
         }
@@ -82,9 +125,7 @@ public class UserService implements UserDetailsService {
         user.setRoles(Collections.singleton(roleRepository.getById(1L)));
         userRepository.save(user);
         return true;
-
     }
-
 
     public void deleteById(Long userId) {
         User user = userRepository.findById(userId)
@@ -95,18 +136,21 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public User update(Long id, User updatedUser) {
+    public User update(Long id, User updatedUser, List<Long> roleIds) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         existingUser.setUsername(updatedUser.getUsername());
         existingUser.setLastname(updatedUser.getLastname());
-        existingUser.setPhoneNumber(updatedUser.getPhoneNumber());
         existingUser.setEmail(updatedUser.getEmail());
         existingUser.setAge(updatedUser.getAge());
         if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
             existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         }
+        Set<Role> roles = roleIds.stream()
+                .map(ids -> roleRepository.findById(ids).orElse(null)).collect(Collectors.toSet());
+        existingUser.setRoles(roles);
         return userRepository.save(existingUser);
     }
+
 }

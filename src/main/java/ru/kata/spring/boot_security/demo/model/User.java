@@ -1,10 +1,13 @@
 package ru.kata.spring.boot_security.demo.model;
 
 import javax.persistence.*;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "user")
@@ -157,5 +160,9 @@ public class User implements UserDetails {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getRolesToString() {
+        return roles.stream().map(Role::getName).map(name -> name.replace("ROLE_", "")).collect(Collectors.joining(" "));
     }
 }
