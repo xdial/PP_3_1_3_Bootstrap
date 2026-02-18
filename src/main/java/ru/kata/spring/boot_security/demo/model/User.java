@@ -1,11 +1,21 @@
 package ru.kata.spring.boot_security.demo.model;
 
-import javax.persistence.*;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Column;
+import javax.persistence.ManyToMany;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.CascadeType;
+import javax.persistence.JoinTable;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,15 +46,13 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
-
     public User() {
-
     }
 
     public User(String username, String lastName, String email, String password, Set<Role> roles) {
@@ -57,15 +65,12 @@ public class User implements UserDetails {
     }
 
     public Long getId() {
-
         return id;
     }
 
     public void setId(Long id) {
-
         this.id = id;
     }
-
 
     public String getLastname() {
         return lastname;
@@ -164,5 +169,18 @@ public class User implements UserDetails {
 
     public String getRolesToString() {
         return roles.stream().map(Role::getName).map(name -> name.replace("ROLE_", "")).collect(Collectors.joining(" "));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return age == user.age && Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(lastname, user.lastname) && Objects.equals(email, user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, lastname, age, email);
     }
 }

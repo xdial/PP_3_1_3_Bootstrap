@@ -3,6 +3,7 @@ package ru.kata.spring.boot_security.demo.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.*;
 
 @Controller
 @RequestMapping("/")
@@ -10,7 +11,7 @@ public class StartController {
 
     // Home page
     @GetMapping("/")
-    public String index() {
-        return "startPage";
+    public ModelAndView index() {
+        return new ModelAndView("startPage");
     }
 }

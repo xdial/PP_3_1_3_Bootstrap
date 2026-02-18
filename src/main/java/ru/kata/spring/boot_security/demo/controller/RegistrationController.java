@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.*;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
@@ -22,13 +23,15 @@ public class RegistrationController {
 
     //REGISTRATION NEW USER
     @GetMapping()
-    public String addUser(@ModelAttribute("user") User user) {
-        return "registration";
+    public ModelAndView addUser(User user) {
+        ModelAndView modelAndView = new ModelAndView("registration");
+        modelAndView.addObject("user", user);
+        return modelAndView;
     }
 
     @PostMapping()
-    public String saveUser(@ModelAttribute("user") User user) {
+    public ModelAndView saveUser(@ModelAttribute("user") User user) {
         userService.save(user);
-        return "redirect:/login";
+        return new ModelAndView("redirect:/login");
     }
 }
