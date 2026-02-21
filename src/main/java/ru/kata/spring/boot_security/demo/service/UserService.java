@@ -73,24 +73,6 @@ public class UserService implements UserDetailsService {
     }
 
     // REGISTRATION FROM ADMIN PANEL
-//    @Transactional
-//    public boolean save(User user, List<Long> roleIds) {
-//        User userFromDB = userRepository.findByUsername(user.getUsername());
-//        if (userFromDB != null) {
-//            return false;
-//        }
-//        Set<Role> roles = roleIds.stream()
-//                .map(id -> roleService.findById(id)).collect(Collectors.toSet());
-//        user.setUsername(user.getUsername());
-//        user.setLastname(user.getLastname());
-//        user.setEmail(user.getEmail());
-//        user.setAge(user.getAge());
-//        user.setPhoneNumber(user.getPhoneNumber());
-//        user.setPassword(passwordEncoder.encode(user.getPassword()));
-//        user.setRoles(roles);
-//        userRepository.save(user);
-//        return true;
-//    }
     @Transactional
     public boolean save(User user, List<Long> roleIds) {
         User userFromDB = userRepository.findByUsername(user.getUsername());
@@ -123,7 +105,6 @@ public class UserService implements UserDetailsService {
     public void deleteById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User with name: '%s' not found", findById(userId).getUsername())));
-
         user.getRoles().clear();
         userRepository.delete(user);
     }
@@ -146,5 +127,4 @@ public class UserService implements UserDetailsService {
         existingUser.setRoles(roles);
         return userRepository.save(existingUser);
     }
-
 }
