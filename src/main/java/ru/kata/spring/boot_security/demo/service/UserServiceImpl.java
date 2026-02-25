@@ -23,13 +23,13 @@ import java.util.Collections;
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
-    private RoleServiceImpl roleServiceImpl;
+    private RoleService roleService;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleServiceImpl roleServiceImpl, @Lazy BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleService roleService, @Lazy BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.roleServiceImpl = roleServiceImpl;
+        this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(Collections.singleton(roleServiceImpl.findById(1L)));
+        user.setRoles(Collections.singleton(roleService.findById(1L)));
         userRepository.save(user);
         return true;
     }

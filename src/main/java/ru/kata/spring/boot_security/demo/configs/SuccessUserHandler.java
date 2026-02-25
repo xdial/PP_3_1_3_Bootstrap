@@ -13,6 +13,7 @@ import java.util.Set;
 
 @Component
 public class SuccessUserHandler implements AuthenticationSuccessHandler {
+
     private UserRepository userRepository;
 
     public SuccessUserHandler(UserRepository userRepository) {

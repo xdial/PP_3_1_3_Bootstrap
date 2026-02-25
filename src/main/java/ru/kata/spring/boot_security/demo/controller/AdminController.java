@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
-import ru.kata.spring.boot_security.demo.service.RoleServiceImpl;
+import ru.kata.spring.boot_security.demo.service.UserService;
+import ru.kata.spring.boot_security.demo.service.RoleService;
 
 import java.util.List;
 
@@ -22,22 +22,22 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
 
-    private UserServiceImpl userServiceImpl;
-    private RoleServiceImpl roleServiceImpl;
+    private UserService userService;
+    private RoleService roleService;
 
     @Autowired
-    public AdminController(UserServiceImpl userServiceImpl, RoleServiceImpl roleServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
-        this.roleServiceImpl = roleServiceImpl;
+    public AdminController(UserService userService, RoleService roleService) {
+        this.userService = userService;
+        this.roleService = roleService;
     }
 
     @GetMapping
     public ModelAndView admin() {
         ModelAndView modelAndView = new ModelAndView("bsadmin");
-        modelAndView.addObject("user", userServiceImpl.userName());
-        modelAndView.addObject("allUsers", userServiceImpl.findAll());
+        modelAndView.addObject("user", userService.userName());
+        modelAndView.addObject("allUsers", userService.findAll());
         modelAndView.addObject("newUser", new User());
-        modelAndView.addObject("roles", roleServiceImpl.findAll());
+        modelAndView.addObject("roles", roleService.findAll());
         return modelAndView;
     }
 
@@ -45,7 +45,7 @@ public class AdminController {
     @PostMapping("/new")
     public ModelAndView saveUser(@ModelAttribute("newUser") User user,
                                  @RequestParam("roles") List<Long> roles) {
-        userServiceImpl.save(user, roleServiceImpl.getRoles(roles));
+        userService.save(user, roleService.getRoles(roles));
         return new ModelAndView("redirect:/admin");
     }
 
@@ -53,21 +53,21 @@ public class AdminController {
     @GetMapping("/edit/{id}")
     public ModelAndView edit(@PathVariable("id") Long id) {
         ModelAndView modelAndView = new ModelAndView("admin/edit");
-        modelAndView.addObject("userUpdate", userServiceImpl.findById(id));
+        modelAndView.addObject("userUpdate", userService.findById(id));
         return modelAndView;
     }
 
     @PatchMapping("edit/{id}")
     public ModelAndView updateUser(@PathVariable("id") Long id, @ModelAttribute("userUpdate") User user,
                                    @RequestParam("roles") List<Long> roles) {
-        userServiceImpl.update(id, user, roleServiceImpl.getRoles(roles));
+        userService.update(id, user, roleService.getRoles(roles));
         return new ModelAndView("redirect:/admin");
     }
 
     //DELETE
     @DeleteMapping("/delete/{id}")
     public ModelAndView deleteUser(@PathVariable("id") Long id) {
-        userServiceImpl.deleteById(id);
+        userService.deleteById(id);
         return new ModelAndView("redirect:/admin");
     }
 }

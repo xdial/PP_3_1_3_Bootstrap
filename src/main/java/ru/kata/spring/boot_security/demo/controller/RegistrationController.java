@@ -8,17 +8,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
+import ru.kata.spring.boot_security.demo.service.UserService;
 
 @Controller
 @RequestMapping("/registration")
 public class RegistrationController {
 
-    private UserServiceImpl userServiceImpl;
+    private UserService userService;
 
     @Autowired
-    public RegistrationController(UserServiceImpl userServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
+    public RegistrationController(UserService userService) {
+        this.userService = userService;
     }
 
     //REGISTRATION NEW USER
@@ -31,7 +31,7 @@ public class RegistrationController {
 
     @PostMapping
     public ModelAndView saveUser(@ModelAttribute("user") User user) {
-        userServiceImpl.save(user);
+        userService.save(user);
         return new ModelAndView("redirect:/login");
     }
 }
